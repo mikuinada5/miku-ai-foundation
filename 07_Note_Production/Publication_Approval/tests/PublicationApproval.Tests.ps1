@@ -169,7 +169,7 @@ Describe 'note Final Approval semantics and G5 orchestration' {
     }
 
     It 'J: explicit proceed statements after Final Package presentation are Publication Approval intent' {
-        foreach ($statement in @('OK', 'これでいい', '投稿して', '公開して', 'いけー')) {
+        foreach ($statement in @('OK', 'OK投稿して', 'これでいい', '投稿して', '公開して', 'いけー')) {
             (Test-NoteExplicitPublicationIntent -Statement $statement -Stage 'FINAL_REVIEW_PACKAGE_PRESENTED') | Should Be $true
         }
     }

@@ -32,7 +32,7 @@ function Test-NoteExplicitPublicationIntent {
     if ($Stage -ne 'FINAL_REVIEW_PACKAGE_PRESENTED') { return $false }
     $normalized = ($Statement.Trim() -replace '[\s　]+', ' ') -replace '[。.!！…]+$', ''
     $patterns = @(
-        '^(?i:ok)$',
+        '^(?i:ok)(?: ?(?:投稿して|公開して))?$',
         '^これでいい$',
         '^投稿して$',
         '^公開して$',

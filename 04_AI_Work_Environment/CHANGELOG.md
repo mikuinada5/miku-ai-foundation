@@ -6,6 +6,14 @@
 
 ------------------------------------------------------------------------
 
+## 2026-09-07｜Cloud Work Publication Runtimeを実装
+
+Linux Cloud WorkにPowerShellがないため、Human Final Approval後のPublication Bundle生成、Handoff検証、G5およびPublication Stepへ進めなかった。Node.js標準機能だけのcross-platform Runtimeを追加し、Windows PowerShell版と同じSchema、canonicalization、identityおよびGate semanticsを使用するよう接続した。
+
+同一Cloud Workはsealed Bundle directoryを直接検証でき、別WorkへのPhase 1単一ZIP routeも維持する。実file／SHA、Package／Approval／Human Event時系列、Publication Conditions、destination／purpose／scope、Source Manifestを再検証し、path escape、symlink、欠落、追加および改変を拒否する。検証後は既存Cloud Browser routeへ`READY_FOR_CLOUD_BROWSER`を渡すが、Browser操作や公開完了を偽装しない。CloudのWRITE ownershipとLocal CodexのSystem Source ownershipは変更していない。
+
+------------------------------------------------------------------------
+
 ## 2026-09-07｜Post-generation Header Normalizationを実装
 
 Visual Production v1.6としてCloud Bridgeをv2へ更新した。native imagegenのRaw PNGは要求寸法と異なっても改変せずTool eventへbindingし、Repository内のcross-platform Node normalizerが別の1280×670 Candidateを決定論的に生成する。Normalization Evidenceはinput／output SHA・寸法、crop、tool／version／method、upstream receipt／Tool eventおよび実行event／timestampを保持する。

@@ -1,7 +1,7 @@
 # note Publication Approval Gate
 
-**Status:** Current / Operational v1.6 / Header Normalization compatible
-**Responsibility:** note Final Review PackageへのHuman Final Approval / Publication Approvalを実際の公開対象へbindingし、承認後のsealed Publication Bundle、Phase 1 Work handoff、G5からPPVまでの継続可否を機械検証する。
+**Status:** Current / Operational v1.7 / Cross-platform Publication Runtime
+**Responsibility:** note Final Review PackageへのHuman Final Approval / Publication Approvalを実際の公開対象へbindingし、承認後のsealed Publication Bundle、同一Work／Phase 1 Work handoff、G5からPPVまでの継続可否をWindowsとLinuxで機械検証する。
 
 ## Contract
 
@@ -35,9 +35,9 @@ Package identityは、Article ID、title、D3 artifact ID／canonical pointer／
 
 Package本体はHuman提示前に`READY_FOR_FINAL_REVIEW`、`approval.status=PENDING`として完成する。Human eventとApproval Evidenceは別Artifactであり、Packageへ追記しない。Human提示用Markdownは、最終本文、Header、無料／Membership境界、Membership、Magazine、price、tags、その他Publication Conditionsの8区分を一括生成し、本文だけの提示をvalidatorが拒否する。未公開本文を含むPackageと提示用Artifactは、D3と同じ公開範囲のWork、Private Sourceまたは指定Archiveへ保存し、Public Repositoryの公開済み領域へ先行配置しない。
 
-## Publication Bundle / Work Handoff Phase 1
+## Publication Bundle / Work Handoff
 
-Human Final Approval / Publication Approval成立後、`New-PublicationBundle.ps1`を実行する。BuilderはG5と共通のpure binding validatorで承認済みFinal Review Packageと実fileを再検証し、G5自体を先行実行せず、次のflat構造を`PublicationBundle/`へ生成する。Final Review PackageとHuman eventは、既存Approval semanticsをWork側で再検証するための追加必須fileである。
+Human Final Approval / Publication Approval成立後、Windows Local Codexは`New-PublicationBundle.ps1`、Linux Cloud Workは`publication-runtime.mjs build`を実行する。両実装は同じCanonical Schema、canonical JSON、identity SHA、Bundle IDおよびPASS／FAIL semanticsを使う。BuilderはG5と共通のpure binding validatorで承認済みFinal Review Packageと実file bytesを再検証し、G5自体を先行実行せず、次のflat構造を`PublicationBundle/`へ生成する。Final Review PackageとHuman eventは、既存Approval semanticsをWork側で再検証するための追加必須fileである。
 
 ```text
 PublicationBundle/
@@ -55,13 +55,23 @@ Bundle identityはArticle ID、Final Review Package ID／identity／file SHA、b
 
 Builderは`HUMAN_APPROVED → BUNDLE_SEALED → HANDOFF_PENDING`を返し、logical BundleをBundle IDごとのdirectoryへ固定する。Seal後にbody、Header、境界、Membership、Magazine、price、tags、その他Conditions、Source Manifest、destinationまたはpurposeが変わった場合、既存Bundleを上書きしない。変更後のFinal Review Package、Approval Evidenceおよび新Bundleを生成する。同一承認入力は同一Bundle IDと同じlogical contentsを生成し、運搬ZIP名は`<Article ID>_PublicationBundle.zip`とする。
 
-Phase 1ではHumanがこのZIP一つを常設note公開Workへ一度渡す。公開Workが信用する正式入力はPublication BundleとExpected Package IDだけである。Chat履歴、「このChatを正本」という参照文、本文／Header／設定の個別手渡しは正式入力ではない。`Test-PublicationBundleHandoff.ps1`はpath escapeを拒否してZIPを展開し、Manifest Schema、構成fileの完全性、各SHA、Package identity、Publication Conditions、Approval Evidence／Human eventのPackage binding、destination、purposeおよびSource Manifestを再検証する。全一致時だけ`HANDOFF_VERIFIED`を返し、G5へ進める。
+同一Cloud Work内に正式Artifactが揃う場合は、生成されたsealed directoryとExpected Package IDを`publication-runtime.mjs verify-directory`へ渡す。別WorkへのPhase 1ではHumanがZIP一つを常設note公開Workへ一度渡し、PowerShellの`Test-PublicationBundleHandoff.ps1`またはNodeの`publication-runtime.mjs verify-zip`で受け取る。公開Workが信用する正式入力はPublication BundleとExpected Package IDだけである。Chat履歴、「このChatを正本」という参照文、本文／Header／設定の個別手渡しは正式入力ではない。受取validatorはpath escape、symlink、重複、欠落、追加fileを拒否し、Manifest Schema、構成fileの完全性、各SHA、Package identity、Publication Conditions、Approval Evidence／Human eventのPackage binding、destination、purposeおよびSource Manifestを再検証する。全一致時だけ`HANDOFF_VERIFIED`を返し、G5へ進める。
 
-Chat→Workの完全自動file転送は現行Platformで保証しない。Phase 1で残るHuman HITLは`HANDOFF_PENDING → HANDOFF_VERIFIED`間の単一ZIP受け渡し一回である。将来の自動化はTransport Adapterを交換して実装し、本Builder、Bundle Manifest、ApprovalまたはG5の契約へ特定Platformの会話状態を埋め込まない。
+同一Work内ではfile転送がないため追加Human HITLは発生しない。Chat→別Workの完全自動file転送は現行Platformで保証しない。Phase 1で残るHuman HITLは`HANDOFF_PENDING → HANDOFF_VERIFIED`間の単一ZIP受け渡し一回である。将来の自動化はTransport Adapterを交換して実装し、本Builder、Bundle Manifest、ApprovalまたはG5の契約へ特定Platformの会話状態を埋め込まない。
 
 標準状態は`HUMAN_APPROVED → BUNDLE_SEALED → HANDOFF_PENDING → HANDOFF_VERIFIED → G5_PASS → PUBLISHED → PPV_PASS`とする。
 
-G5は新しい承認を依頼しない。`Test-NoteG5Approval`が次をすべて検証してPASSした場合、同一Packageのまま`NOTE_DRAFT_CREATE → BODY_APPLY → HEADER_APPLY → PUBLICATION_CONDITIONS_APPLY → SETTINGS_VERIFY → PUBLISH → PPV`を継続できる。
+Cloud Workでは次のCLIを順に使う。`build`のJSON出力にある`bundle_directory`と、承認済みFinal Review Packageの`package_id`を後続へ渡す。同一Workは`verify-directory`と`e2e`を使用する。別WorkでZIPを受け取る場合は`verify-zip`または`e2e-zip`へ切り替える。
+
+```bash
+node 07_Note_Production/Publication_Approval/scripts/publication-runtime.mjs validate-approval --package <final-review-package.json> --actual-package <final-review-package.json> --human-event <human-event.json> --approval <approval-evidence.json> --source-manifest <source-manifest.json> --body <D3.md> --header <header.png>
+node 07_Note_Production/Publication_Approval/scripts/publication-runtime.mjs build --package <final-review-package.json> --human-event <human-event.json> --approval <approval-evidence.json> --source-manifest <source-manifest.json> --body <D3.md> --header <header.png> --output-directory <runtime-output>
+node 07_Note_Production/Publication_Approval/scripts/publication-runtime.mjs verify-directory --bundle-directory <PublicationBundle> --expected-package-id <FRP-ID>
+node 07_Note_Production/Publication_Approval/scripts/publication-runtime.mjs g5 --bundle-directory <PublicationBundle> --expected-package-id <FRP-ID>
+node 07_Note_Production/Publication_Approval/scripts/publication-runtime.mjs e2e --bundle-directory <PublicationBundle> --expected-package-id <FRP-ID>
+```
+
+G5は新しい承認を依頼しない。Windowsでは`Test-NoteG5Approval`、Cloudでは`publication-runtime.mjs g5`が次をすべて検証する。PASSした場合、同一Packageのまま`NOTE_DRAFT_CREATE → BODY_APPLY → HEADER_APPLY → PUBLICATION_CONDITIONS_APPLY → SETTINGS_VERIFY → PUBLISH → PPV`を継続できる。Cloudの`e2e`／`e2e-zip`は工程ごとに同じbindingを再検証し、`READY_FOR_CLOUD_BROWSER`を返す。Browser操作、公開およびPPVの実施自体は既存Cloud Browser routeの責任である。
 
 - 三つのJSONが各Schemaへ適合する。
 - Human eventがFinal Review Package提示後に発生し、文脈上そのPackageへの明示的な進行意思である。
@@ -87,9 +97,11 @@ Publication ApprovalはExternal Audit、OneDrive保存、Git通信、credential�
 - `scripts/PublicationApproval.psm1`: Schema、identity、時系列、intent、scope、継続工程のvalidator
 - `scripts/Test-PublicationApproval.ps1`: G5／工程検証entrypoint
 - `scripts/PublicationBundle.psm1`: Bundle Builder／Sealer、identity、secure ZIP受取、Work検証、G5接続
+- `scripts/publication-runtime.mjs`: Cloud Work用cross-platform Approval validation、Bundle Builder／Sealer、directory／ZIP受取、G5／Publication Step検証CLI
 - `scripts/New-PublicationBundle.ps1`: Human Approval後のBundle生成entrypoint
 - `scripts/Test-PublicationBundleHandoff.ps1`: Phase 1 Work受取／E2E検証entrypoint
 - `tests/FinalReviewPackageCompiler.Tests.ps1`: Compiler negative／identity／presentation tests
 - `tests/PublicationApproval.Tests.ps1`: Approval semantics negative / regression tests
 - `tests/PublicationBundle.Tests.ps1`: Bundle欠落／改変／Seal／handoff／G5接続negative and regression tests
+- `tests/PublicationRuntimeCrossPlatform.Tests.mjs`: PowerShell／Node parity、Cloud-only E2E、tamper／path escape／時系列／Approval流用negative tests
 - `../../04_AI_Work_Environment/Visual_Production/tests/CloudWorkHeaderBridge.Tests.mjs`: Cloud HeaderからCompilerまでのPowerShell非依存E2E

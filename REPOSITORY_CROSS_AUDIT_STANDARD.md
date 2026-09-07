@@ -1,7 +1,7 @@
-# Repository横断監査基準 v1.12
+# Repository横断監査基準 v1.13
 
 **Document type:** Repository Governance Standard<br>
-**Status:** Current / Operational v1.12<br>
+**Status:** Current / Operational v1.13<br>
 **Scope:** Repository全体へ影響する正式Sourceの新規追加・更新・移動・廃止<br>
 **Purpose:** 正式Sourceを「置いただけ」にせず、既存責任・参照構造・運用・履歴へ一貫して接続する
 
@@ -118,6 +118,7 @@
 - [ ] noteのFinal Approval後にD3、Header、無料／Membership境界、price、Membership、Magazine、tags、その他の承認条件または新規Human Decisionが変われば失効し、同一Packageの内部処理だけでは失効しない
 - [ ] Human Final Approval後のnote Publication Bundleは本文、Header、Publication Conditions、Approval Evidence、Human event、Source ManifestおよびFinal Review Packageを一つのsealed論理Artifactへbindingし、ZIP SHAをidentityへ使用しない
 - [ ] 公開WorkはPublication BundleとPackage IDだけを正式入力とし、Chat履歴または「このChatを正本」という参照文を受領根拠にしない。全構成物のSchema／実体／SHA／Approval binding／destination／purpose一致後だけ`HANDOFF_VERIFIED`からG5へ進む
+- [ ] Cloud WorkのPublication RuntimeはPowerShellを要求せず、PowerShell版と同じSchema、canonicalization、identity SHA、Bundle IDおよびPASS／FAIL semanticsを使用する。同一Workのsealed directoryと別Workの単一ZIPが同じG5へ接続される
 - [ ] Bundle Seal後の承認対象変更は旧Bundleを上書きせず新Package／Approval／Bundleへ戻し、同一Bundleの単一ZIP運搬だけでは再承認を要求しない。完全自動Transportを未実装のまま保証済みと表現しない
 - [ ] Publication ApprovalをExternal Audit、Archive保存、Git通信、credentialまたは他サービス送信へ流用できない
 
@@ -144,6 +145,7 @@
 - [ ] note Approval semantics変更では、Human Reviewのみ、Marketing変更前Review、同一Packageへの再承認要求、本文／境界／Header変更および別目的Approval流用をFAILとし、Final Packageへの明示的進行意思、G5自動PASS、publish／PPVまでの無停止継続をpositive testした
 - [ ] note Final Review Package Compiler変更では、D3、Marketing PASS、Header、Header QA、境界、Membership、Magazine、price、tags、Source Manifest、本文／Header SHAの欠落・不一致をFAILとし、同一Input同一identity、各承認対象変更時の新identity、旧Approval拒否および8区分一括提示をtestした
 - [ ] note Publication Bundle変更では、本文／Header欠落、manifestのみ、本文／Header SHA不一致、Approval Package ID、destination／purpose、Publication Conditions、Source Manifest、Seal後変更およびChat参照だけをFAILとし、完全一致Bundle、単一ZIP handoff、G5以降無停止およびStep①回帰をtestした
+- [ ] Cloud Publication Runtime変更では、PowerShell／Node identity parity、同一入力／同一bytes、Human event時系列、Package／file SHA binding、本文／Header／境界／Source／Approval改変、欠落／追加／path escape／sealed改変をtestし、Cloud-only CLIとWindows ZIP相互受取をPASSした
 - [ ] Repository WRITE Ownership変更では、Cloud新規Article pathをPASSし、CloudによるSystem Source／Repository-wide CHANGELOG／既存ArticleのWRITEと異なるownerのpath collisionをFAILにした
 - [ ] Repository Sync変更では、clean equal、clean remote-only aheadのfast-forward、Cloud Article正常入荷をPASSし、dirty＋remote ahead、local ahead、true divergenceおよびGit capability未確認を区別している
 - [ ] push後にlocal HEADとremoteの一致を確認する計画がある

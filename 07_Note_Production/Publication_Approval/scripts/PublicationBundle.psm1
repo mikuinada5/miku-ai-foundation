@@ -303,7 +303,7 @@ function New-NotePublicationBundle {
             identity_sha256 = $conditionsIdentity.identity_sha256
             conditions = $conditionsIdentity.normalized
         }
-        $conditionsJson = $conditionsDocument | ConvertTo-Json -Depth 40
+        $conditionsJson = ($conditionsDocument | ConvertTo-Json -Depth 40) -replace "`r`n", "`n"
         $conditionsSha = Get-NoteBundleTextSha256 $conditionsJson
 
         $manifest = [ordered]@{
@@ -336,7 +336,7 @@ function New-NotePublicationBundle {
         $identity = Get-NotePublicationBundleIdentity $manifest
         $manifest.bundle_id = $identity.bundle_id
         $manifest.identity_sha256 = $identity.identity_sha256
-        $manifestJson = $manifest | ConvertTo-Json -Depth 50
+        $manifestJson = ($manifest | ConvertTo-Json -Depth 50) -replace "`r`n", "`n"
 
         if (-not (Test-Path -LiteralPath $OutputDirectory)) { New-Item -ItemType Directory -Path $OutputDirectory | Out-Null }
         $outputRoot = [IO.Path]::GetFullPath($OutputDirectory)

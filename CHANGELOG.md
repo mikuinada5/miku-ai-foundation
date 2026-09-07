@@ -8,6 +8,16 @@
 
 ------------------------------------------------------------------------
 
+## 2026-09-07｜Cloud Work Publication Bundle／G5をcross-platform化
+
+AIDAILY-006ではFinal Review Package `FRP-AIDAILY-006-bec6d699fc80d6acc54a037366ec8acb691f350fbda679ccf7a76e3966628c26`へのHuman statement「OK投稿して」まで成立したが、その後のApproval再検証、Publication Bundle生成／受取、G5およびPublication StepがPowerShell専用で、Linux Cloud Workが`BLOCKED_PLATFORM_BOUNDARY`となった。Pipeline v1.21、note SOP v2.15、note README v1.24、Publication Approval v1.7、Repository横断監査基準v1.13へ更新した。
+
+Node.js標準機能だけで動くPublication Runtimeを追加し、PowerShell版と同じSchema、canonicalization、identity SHA、Bundle IDおよびPASS／FAIL semanticsへ接続した。承認済みPackageと本文、Header、Publication Conditions、Source Manifest、Human Event、Approval Evidenceの実bytesを再検証してsealed Bundleを生成し、同一Cloud Workではdirectoryを直接、別Workでは従来の単一ZIPを検証して`HANDOFF_VERIFIED → G5_PASS`へ進める。ZIP path escape、symlink、重複、欠落、追加fileおよび改変を拒否する。
+
+同一Packageは追加Human ApprovalなしでPublication Stepを通過し、`READY_FOR_CLOUD_BROWSER`として既存Cloud Browser routeへ渡せる。Browser操作そのものと実公開／PPVは本Runtimeの責任外であり、Cloud WorkのGit WRITEは新規Article-local Published Artifactだけ、System Source ownerはLocal Codexのままである。AIDAILY-006の本文、Header、Publication Conditions、Package identityおよび既存Article-local作業差分は変更していない。External Audit Pipelineはdisabled／`NOT OBTAINED`のままで、外部監査通信は行っていない。
+
+------------------------------------------------------------------------
+
 ## 2026-09-07｜Cloud Work Header Post-generation Normalizationを正式接続
 
 実運用でcanonical requestが1280×670を指定していても、native imagegenが1734×907のRaw PNG（SHA-256 `40690887aec9223c8e78a71efd5847fba023f348dadae3dce9c8a2c705c5ea5c`）を返し、Cloud Bridgeが生成実体へ直接1280×670を要求して停止した。Pipeline v1.20、Visual Production v1.6、note SOP v2.14、note README v1.23、Publication Approval v1.6、Repository横断監査基準v1.12へ更新した。

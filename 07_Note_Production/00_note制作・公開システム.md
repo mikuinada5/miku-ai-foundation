@@ -1,6 +1,6 @@
-# note制作・公開システム v2.14
+# note制作・公開システム v2.15
 
-**Status:** Current / Operational v2.14 / Post-generation Header Normalization
+**Status:** Current / Operational v2.15 / Cross-platform Publication Runtime
 **Scope:** note制作、Marketing Review、Header Production、Final Review、G5自動検証、Publication Transaction、公開後記録、Session単位のSNS展開、Repositoryへの知見還元
 
 ## 1. 責任と非責任
@@ -387,15 +387,15 @@ Marketing Approvedの第3稿本文、`FORMAL_HEADER_ASSET`、無料／Membership
 
 Final Review Package、Human response eventおよびApproval Recordは`Publication_Approval/`のSchemaに従い、Package ID／SHA、destination、purpose、event ID／時刻およびSource Manifest SHAをbindingする。
 
-#### 2.6.1.1 Publication Bundle／Work Handoff Phase 1
+#### 2.6.1.1 Publication Bundle／Work Handoff
 
-Human Final Approval成立後、`Publication_Approval/scripts/New-PublicationBundle.ps1`で承認済みFinal Review Package、D3、Header、Publication Conditions、Approval Evidence、Human eventおよびSource Manifestを一つのsealed Bundleへ変換する。Bundle identityは論理構成物とdestination=`note`／purpose=`publish`へbindingし、ZIP bytesまたはZIP SHAへ依存しない。Builderは`HUMAN_APPROVED → BUNDLE_SEALED → HANDOFF_PENDING`を返す。
+Human Final Approval成立後、Windows Local Codexは`Publication_Approval/scripts/New-PublicationBundle.ps1`、Linux Cloud Workは`Publication_Approval/scripts/publication-runtime.mjs build`で、承認済みFinal Review Package、D3、Header、Publication Conditions、Approval Evidence、Human eventおよびSource Manifestを一つのsealed Bundleへ変換する。両実装は同じSchema、canonical JSON、identity SHA、Bundle IDおよびPASS／FAIL semanticsを使う。Bundle identityは論理構成物とdestination=`note`／purpose=`publish`へbindingし、ZIP bytesまたはZIP SHAへ依存しない。Builderは`HUMAN_APPROVED → BUNDLE_SEALED → HANDOFF_PENDING`を返す。
 
-Humanは`<Article ID>_PublicationBundle.zip`を常設note公開Workへ一度だけ渡す。Workは`Publication_Approval/scripts/Test-PublicationBundleHandoff.ps1`へZIPとExpected Package IDを渡し、全構成物を再検証する。Chat履歴または「このChatを正本」という参照だけでは公開を開始しない。全一致時だけ`HANDOFF_VERIFIED`とし、G5へ進む。完全自動Chat→Work TransportはPhase 1の対象外である。
+同一Cloud Work内に正式Artifactが揃う場合は、`publication-runtime.mjs verify-directory`へsealed directoryとExpected Package IDを渡す。別WorkへのPhase 1ではHumanが`<Article ID>_PublicationBundle.zip`を常設note公開Workへ一度だけ渡し、PowerShellまたは`publication-runtime.mjs verify-zip`で受領検証する。Chat履歴または「このChatを正本」という参照だけでは公開を開始しない。全一致時だけ`HANDOFF_VERIFIED`とし、G5へ進む。完全自動Chat→別Work TransportはPhase 1の対象外である。
 
 #### 2.6.2 G5 Automated Package Verification
 
-G5はHumanへ新しい承認を求めない。`HANDOFF_VERIFIED`のBundle内fileを入力に`Publication_Approval/scripts/Test-PublicationApproval.ps1`を実行し、Human Final Approval Evidence、Final Review Package、D3、Header、Publication Conditions、destination、purposeおよび必要Sourceの一致を検証する。一致すればPASSし、追加Human ApprovalなしでPublication E2Eへ進む。Handoff未検証、差分、Evidence欠落、Human Reviewの流用、Source不一致またはHuman判断が必要な新規条件があればFAILしてFinal Reviewへ戻す。
+G5はHumanへ新しい承認を求めない。`HANDOFF_VERIFIED`のBundle内fileを入力に、Windowsでは`Publication_Approval/scripts/Test-PublicationApproval.ps1`、Cloudでは`publication-runtime.mjs g5`を実行し、Human Final Approval Evidence、Final Review Package、D3、Header、Publication Conditions、destination、purposeおよび必要Sourceの一致を検証する。一致すればPASSし、追加Human ApprovalなしでPublication E2Eへ進む。Cloudの`e2e`出力`READY_FOR_CLOUD_BROWSER`は検証済みBundleを既存Browser routeへ安全に渡す状態であり、Browser操作や公開事実を表さない。Handoff未検証、差分、Evidence欠落、Human Reviewの流用、Source不一致またはHuman判断が必要な新規条件があればFAILしてFinal Reviewへ戻す。
 
 #### 2.6.3 Publication Draft E2E
 
@@ -480,7 +480,7 @@ Human-approved Series Articleを対象とする場合は、承認済みSeries ID
 
 AIは、Marketing Approvedの第3稿、Header Asset、境界、Publication Decision Summary、必要な自己開示、Marketing Gate、未解決事項、Low Confidence Decision、公開先および必要Source Manifestを`Publication_Approval/scripts/New-FinalReviewPackage.ps1`へ渡す。Compilerが必須Input、実file SHA、Schema、Package identityおよび8区分のHuman提示内容を検証し、`READY_FOR_FINAL_REVIEW / PENDING`のimmutable Final Review Packageを生成した場合だけHumanへ一括提示する。本文だけの提示、会話上だけの最終稿状態、必須Input不足またはSHA不一致は`BLOCKED_FINAL_PACKAGE_INCOMPLETE`で停止する。この提示より前の「noteに反映して」「これでいい」等はHuman Reviewまたは制作指示であり、Final Approvalとして扱わない。
 
-Final Review Package提示後、文脈上そのPackageを指す「OK」「これでいい」「投稿して」「公開して」「いけー」等の明示的進行意思はHuman Final ApprovalとPublication Approvalを同時に成立させる。承認後はPublication Bundleを自動生成・Sealする。Phase 1ではHumanが単一ZIPを公開Workへ一度渡し、Work受取検証とG5がPASSしたら、Package／Bundle差分、新規Human Decision、Source不一致または実行異常がない限り、note反映、公開設定反映、publish、PPVまで再承認なしで継続する。手段または接続がなければ、AIは公開完了と偽らず、未実施状態と最小の再開条件を記録する。
+Final Review Package提示後、文脈上そのPackageを指す「OK」「OK投稿して」「これでいい」「投稿して」「公開して」「いけー」等の明示的進行意思はHuman Final ApprovalとPublication Approvalを同時に成立させる。承認後はPublication Bundleを自動生成・Sealする。同一Cloud Work内に正式Artifactが揃う場合はsealed directoryを再検証してG5へ進み、別WorkへのPhase 1 handoffだけHumanが単一ZIPを一度渡す。Work受取検証とG5がPASSしたら、Package／Bundle差分、新規Human Decision、Source不一致または実行異常がない限り、note反映、公開設定反映、publish、PPVまで再承認なしで継続する。手段または接続がなければ、AIは公開完了と偽らず、未実施状態と最小の再開条件を記録する。
 
 ## 4. 企画から公開後まで
 
@@ -491,7 +491,7 @@ Final Review Package提示後、文脈上そのPackageを指す「OK」「これ
 5. **Marketing Review → 第3稿**：第2稿だけを入力にMarketing Reviewを行う。Must FixはRequirementとしてnote制作部へ返し、必要な修正とMarketing再監査を経て、無料／Membership境界、Membership、Magazine、price、tagsその他の必要条件を含むPublication Decisionを確定し、第3稿を作る。必須条件に未解決DecisionがあればMarketing Approvedにしない。
 6. **Header Production / Header QA / Formal Promotion**：Marketing Approved後の最終タイトルと第3稿を入力にVisual Production BridgeでHeaderを制作し、QA PASS候補へのHuman Approval後にMaster／Contract／request／Bridge／Asset／QA／Article ID／title bindingを検証して`FORMAL_HEADER_ASSET`を確定する。
 7. **Final Review Package Compiler / Human Final Review**：Marketing Approvedの第3稿本文、Marketing Review Evidence、`FORMAL_HEADER_ASSET`、Publication Conditions、必要な自己開示、公開先およびSource Manifestを決定論的Compilerで一つのimmutable Package Artifactへ変換する。Schema、各file SHA、Formal Header provenance、Package identityおよび8区分のHuman提示内容がPASSした`READY_FOR_FINAL_REVIEW / PENDING`だけを一括提示し、提示後の明示的進行意思を別ArtifactのPackage-bound Human Final Approval / Publication Approvalとして記録する。
-8. **Publication Bundle / Work Handoff Phase 1**：承認済みPackageからsealed Bundleと単一ZIPを生成する。HumanがZIPを公開Workへ一度渡し、WorkはBundleとExpected Package IDを機械検証して`HANDOFF_VERIFIED`へ進める。Chat履歴を正本にしない。
+8. **Publication Bundle / Work Handoff**：承認済みPackageからsealed Bundleと単一ZIPを生成する。同一Workはsealed directoryを、別WorkへのPhase 1はHumanが一度渡したZIPを、Expected Package IDとともに機械検証して`HANDOFF_VERIFIED`へ進める。Chat履歴を正本にしない。
 9. **G5 Automated Package Verification**：検証済みBundle内のApproval Evidence、Final Review Package、実際の公開対象、destination、purposeおよび必要Sourceを自動照合する。同一ならPASSし、新しい承認を求めない。
 10. **Publication E2E / Transaction**：G5検証済みBundleをnote下書きへ反映し、Publication Conditionsと対象Series ProfileからSettingsを構成・再照合して最終操作を実行する。下書き前、設定画面またはpublish直前に再承認を求めない。
 11. **Post-Publication Verification**：公開URL、表示、Header、本文、境界、Membership、対象プラン、価格、加入導線、Magazine、Tags、日時をDecisionと対象Series Profileに対して照合し、全項目一致でG9／Publication E2EをPASSとする。後続Human QAでGapが判明した場合は初回判定を保持したまま再オープンする。
@@ -570,11 +570,11 @@ Pre-Human Review QA / G4（FAILなら修正→新exact versionを再QA）
 - Compilerの検証／生成中を`FINAL_REVIEW_PACKAGE_BUILDING`とし、Package JSONとHuman提示用ArtifactのSchema／identity／一括提示検証がPASSした場合だけ`READY_FOR_FINAL_REVIEW / PENDING`へ進める。Input不足、MarketingまたはHeader QA未PASS、SHA不一致、本文だけの提示は`BLOCKED_FINAL_PACKAGE_INCOMPLETE`としてSTOPし、Section Statusは`Decision Pending`のまま不足Inputの責任元へ戻す。
 - Package生成後にD3、title、Header、境界、Membership、Magazine、price、tags、その他条件、Marketing Evidence、destinationまたはSource Manifestが変わった場合は既存Packageを上書きせず、新identityのPackageを生成する。Human eventとApproval EvidenceはPackage本体から分離し、提示前Packageは`approval=PENDING`を保持する。
 - Final Reviewで本文、HeaderまたはDecisionが差し戻された場合は、未変更の第3稿、Marketing Review結果およびDecisionを有効なまま保持する。影響範囲だけを修正・再監査して`Decision Pending`へ戻す。
-- Package-bound Human Final Approval / Publication Approval後、Publication BundleをSealし、Phase 1の単一ZIP handoffとWork受取検証を行う。`HANDOFF_VERIFIED`後にG5がApproval Evidence、実Packageおよび必要Sourceの一致を自動検証する。G5がPASSした場合だけ最終Publication Packageを`Approved`とし、そのままG8／G9まで継続する。
+- Package-bound Human Final Approval / Publication Approval後、Publication BundleをSealする。同一Workはsealed directoryを直接再検証し、別WorkへのPhase 1は単一ZIP handoffを検証する。`HANDOFF_VERIFIED`後にG5がApproval Evidence、実Packageおよび必要Sourceの一致を自動検証する。G5がPASSした場合だけ最終Publication Packageを`Approved`とし、そのままG8／G9まで継続する。
 - Package-bound Human Final Approval / Publication Approval後、Publication Bundle Builderが承認済みPackage、D3本文、Header、Publication Conditions、Approval Evidence、Human eventおよびSource Manifestを再検証し、`BUNDLE_SEALED / HANDOFF_PENDING`の論理Bundleと`<Article ID>_PublicationBundle.zip`を生成する。ZIPは運搬容器であり、そのSHAをBundle identityへ含めない。
-- Phase 1ではHumanが単一ZIPを常設note公開Workへ一度渡す。公開Workの正式入力はPublication BundleとPackage IDだけであり、Chat履歴、「このChatを正本」という参照文、本文／Header／設定の個別手渡しを正本として受け取らない。WorkはBundle Manifest、全file実体／SHA、Package ID、Publication Conditions、Approval Evidence／Human event、destination=`note`、purpose=`publish`およびSource Manifestを再検証し、全一致時だけ`HANDOFF_VERIFIED`からG5へ進む。
+- 同一Cloud Workでは生成済みsealed `PublicationBundle/`とPackage IDを正式入力として再検証する。別WorkへのPhase 1ではHumanが単一ZIPを常設note公開Workへ一度渡す。公開WorkはChat履歴、「このChatを正本」という参照文、本文／Header／設定の個別手渡しを正本として受け取らない。WorkはBundle Manifest、全file実体／SHA、Package ID、Publication Conditions、Approval Evidence／Human event、destination=`note`、purpose=`publish`およびSource Manifestを再検証し、全一致時だけ`HANDOFF_VERIFIED`からG5へ進む。
 - Bundle identityはArticle ID、Final Review Package ID／identity／SHA、本文SHA、Header SHA、Publication Conditions identity／SHA、Source Manifest identity／SHA、Approval Evidence／Human event identity、destinationおよびpurposeから決定論的に算出する。Seal後にこれらが変わった場合は既存Bundleを書き換えず、新しいFinal Review Package／Approval／Bundleへ戻す。同一Bundleの運搬・展開・検証だけでは再承認しない。
-- Chat→Workの完全自動file転送は現行Platformで保証せず、Phase 1のHuman HITLは`HANDOFF_PENDING → HANDOFF_VERIFIED`間の単一ZIP受け渡し1回だけとする。将来はTransport Adapterを交換し、Bundle、ApprovalまたはG5の論理契約へ特定Platformを埋め込まない。
+- Windows Local CodexはPowerShell版、Linux Cloud Workは`publication-runtime.mjs`を使い、同じSchema、canonicalization、identity SHA、Bundle IDおよびPASS／FAIL semanticsでApproval Validation、Bundle生成／Seal、Handoff、G5、Publication Stepを実行する。Cloud Node runtimeはBrowser操作を行わず、`READY_FOR_CLOUD_BROWSER`を既存Cloud Browser routeへ渡す。同一Workでは追加Human HITLを生じない。Chat→別Workの完全自動file転送は現行Platformで保証せず、Phase 1のHuman HITLは`HANDOFF_PENDING → HANDOFF_VERIFIED`間の単一ZIP受け渡し1回だけとする。将来はTransport Adapterを交換し、Bundle、ApprovalまたはG5の論理契約へ特定Platformを埋め込まない。
 - Final Approval後にD3、Header、無料／Membership境界、price、Membership、Magazine、tags、その他の承認条件またはHuman判断が必要な新規条件を変更した場合はApprovalを失効させる。Package不変の内部処理では再承認しない。差分、Source不一致または異常を検出した場合、Approvalを利用して設定を推測変更せずSTOPし、必要なReview／Approvalへ戻す。
 
 次のいずれかでは、制作台本または公開成果物記録を `Recovery Required` として扱う：公開URLと記録の不一致、承認版と公開候補の不一致、接続／認証失敗、公開直後の表示・リンク・価格異常、Work稿とRepository正本の競合、公開停止を要する安全上の懸念。

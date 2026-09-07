@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-09-07｜Publication Bundle／G5をLinux Cloud Workへ接続
+
+note SOP v2.15、README v1.24、Publication Approval v1.7へ更新した。Final Review PackageとHuman Final ApprovalまでCloud対応していても、その後のApproval validation、Bundle Builder／Handoff、G5／Publication StepがPowerShell専用だったため、Linux Cloud Workが停止していた。
+
+`publication-runtime.mjs`はCanonical Schemaと実file bytesを再検証し、PowerShell版と同じPublication Conditions／Bundle identityを生成する。同一Workではsealed directory、別Workでは従来の単一ZIPを正式入力として`HANDOFF_VERIFIED`へ進め、同一Packageなら追加承認なしでG5からPPVまでの工程可否を検証する。「OK投稿して」はFinal Review Package提示後の明示的進行意思として認識し、Human Review段階では拒否する。
+
+AIDAILY-006の本文、Header、Publication Conditions、Package identityおよび既存Article-local成果物は変更しない。Browser操作、実公開およびPPVは既存Cloud Browser routeへ分離し、System Source WRITE ownerとCloud append-only範囲を維持する。
+
+---
+
 ## 2026-09-07｜Header Post-generation Normalizationをnote E2Eへ接続
 
 note SOP v2.14、README v1.23、Publication Approval v1.6へ更新した。Cloud Workはnative Raw Headerを`RAW_GENERATED_UNVERIFIED`として保持し、決定論的Normalizationで生成した1280×670の別Assetだけを`NORMALIZED_UNVERIFIED`からAsset QA／Human Review Candidateへ進める。Header ApprovalとFormal identityはRaw SHA、Normalization identity／Evidence、Normalized SHAをbindingする。
