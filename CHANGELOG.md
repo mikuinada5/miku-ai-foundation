@@ -78,6 +78,14 @@ Package identityはArticle ID、title、本文／Header SHA、Marketing identity
 
 ------------------------------------------------------------------------
 
+## 2026-09-05｜AIDAILY-006公開成果物をcanonical pathへ記録
+
+Human承認済みFinal Publication PackageをPackage-bound Human Final Approval / Publication Approvalに基づいてnoteへ公開した。公開URLは`https://note.com/miku_inada/n/nd745fe75adfd`。タイトル、Header、本文、無料／Membership境界、対象プラン、月額1,500円、Magazine、加入導線、4 Tagsおよび公開日時を照合し、Post-Publication Verification PASSとした。SNS共有は未実行、Claude外部監査はdisabled／`NOT OBTAINED`のまま外部監査通信なし。
+
+公開済み最終稿、Header Asset記録、公開成果物記録を`07_Note_Production/02_Published/AIDAILY/AIDAILY-006/`へ配置し、note Timeline／CHANGELOGを同期した。Final PackageとHeader binaryはPublic Repositoryへ複製せず、OneDrive AI Archiveへの着地はAIDAILY-006固有のHuman承認待ちとしている。commit／pushは別のGit Transactionとして保留する。
+
+------------------------------------------------------------------------
+
 ## 2026-09-05｜`.codex-runtime/`をRepository-local一時実行領域として整理
 
 未追跡だった`.codex-runtime/`の47ファイルを、正式成果物のruntime重複1件、OneDriveへ保存済みのEvidence重複16件、再生成可能な一時ファイル30件に分類した。AIDAILY-004 H2とStyle QA Incidentの保存必須14組は、OneDrive Personal Archive `Derived`の正式保存コピーとSHA-256一致を確認した。OneDriveクラウド同期状態は未確認のため推測せず、Local保存確認として扱う。
