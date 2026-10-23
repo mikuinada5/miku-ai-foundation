@@ -8,6 +8,14 @@
 
 ------------------------------------------------------------------------
 
+## 2026-10-23｜Universal Design Coreの責任本籍とローカル配置候補を追加
+
+Human承認に基づき、独立した `08_Design_Core/` に受領ZIPのREADMEと00〜10の12ファイル、および領域CHANGELOGを配置した。READMEを正式な参照入口とし、各MDの役割・必読範囲・依存・責任境界を整理した。専門本文、判断カード、ケース、YAML、検証計画を保持し、Repository RulesとLocal CodexのOwnership Matrixを整合させた。
+
+責任本籍の採用・ローカル配置の承認と、本文の内容レビュー・制作テスト・運用承認を分離する。CoreはDRAFT／NOT OPERATIONAL。Pipeline参照追加は別途確認対象とし、Phase・Gate・承認構造、Brand OS、教育用PPT制作基準、Visual Production、45項目QAの原本・採点・運用、古いworktree登録および別Repositoryは変更しない。commit・pushは未実施。出自・未解決事項は `08_Design_Core/CHANGELOG.md` とREADMEを参照する。
+
+------------------------------------------------------------------------
+
 ## 2026-09-07｜Cloud Work Publication Bundle／G5をcross-platform化
 
 AIDAILY-006ではFinal Review Package `FRP-AIDAILY-006-bec6d699fc80d6acc54a037366ec8acb691f350fbda679ccf7a76e3966628c26`へのHuman statement「OK投稿して」まで成立したが、その後のApproval再検証、Publication Bundle生成／受取、G5およびPublication StepがPowerShell専用で、Linux Cloud Workが`BLOCKED_PLATFORM_BOUNDARY`となった。Pipeline v1.21、note SOP v2.15、note README v1.24、Publication Approval v1.7、Repository横断監査基準v1.13へ更新した。

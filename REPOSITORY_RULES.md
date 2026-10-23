@@ -390,6 +390,20 @@ Note Production領域に関する意味のある変更は `07_Note_Production/CH
 
 ------------------------------------------------------------------------
 
+## 3.7 Universal Design Core領域の基本構造
+
+`08_Design_Core/` は、静的な視覚コミュニケーションを中心とする全媒体共通のデザイン解釈・視覚判断・選択理由・Visual Directionを担う、独立したトップレベル責任単位である。責任本籍とローカル配置はHuman承認済みだが、本文はDRAFT／NOT OPERATIONALであり、内容レビュー・制作テスト・運用承認・Pipeline参照追加は未完了である。
+
+正式な参照入口は [08_Design_Core/README.md](08_Design_Core/README.md)。構成はREADME、`00_Design_Core.md`、`01_Intent_Interpretation.md`、`02_Visual_Hierarchy.md`、`03_Layout_Composition.md`、`04_Spacing_Rhythm.md`、`05_Color_System.md`、`06_Typography.md`、`07_Visual_Elements.md`、`08_Art_Direction.md`、`09_Design_Decision_Process.md`、`10_Cases_and_Validation.md` および `CHANGELOG.md` とする。READMEが各ファイルの責任、必読・条件付き参照、依存Source、承認状態を列挙する。専門判断をREADMEへ要約して置き換えず、該当本文を参照する。
+
+Coreは視覚判断を担い、Brand固有の色・書体・写真方針、Educationの教育内容・機能・提示順序、媒体固有仕様、Voice／Writingの内容・文体責任を上書きしない。AI作業環境の実装でも、スタイル辞典・固定テンプレート集でもない。共通本文をBrand、Education、媒体別Sourceへ複製しない。
+
+Source Router／Source QA／Source Manifest、PipelineのPhase・Gate・承認、Visual ProductionのGeneration Contract／Runtime binding／Asset QA、はるかぜ式45項目QAの原本・採点・運用は、それぞれ既存の責任Sourceを正とする。Coreの配置・参照入口登録は運用開始やQA PASSを意味しない。Pipelineへの参照追加は別途確認対象とし、DRAFTをCurrentな制作Sourceとして扱わない。既存Sourceとの矛盾はCoreが独断で解消せずHumanへ返す。
+
+WRITE ownerは `04_AI_Work_Environment/Repository_Governance/ownership-matrix.json` の `local-codex` domainを正とする。Coreの意味ある変更は `08_Design_Core/CHANGELOG.md`、Repository構造・参照・所有権に関わる変更はルートおよび該当責任領域のCHANGELOGへ記録する。Versionは本文とGitで管理し、version付きフォルダや並列Currentを作らない。
+
+------------------------------------------------------------------------
+
 ## 4. 教育領域の基本構造
 
 教育領域は、全Course共通の教育設計基準、Course固有の教育責任、全Course共通の教材制作責任を分離する。

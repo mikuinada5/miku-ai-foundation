@@ -6,6 +6,14 @@
 
 ------------------------------------------------------------------------
 
+## 2026-10-23｜Design Core責任本籍のLocal WRITE ownerを登録
+
+Human承認済みの独立責任本籍 `08_Design_Core/` に対し、Ownership Matrixへ `local-design-core` domain（owner `local-codex`、mode `maintain`、path prefix `08_Design_Core/`）を追加した。既存Cloud domain、default deny、Schemaの契約版v1.0、Source Resolution／Visual Production／Preflightの実装は変更しない。
+
+Coreの専門判断はAI作業環境へ移管せず、正式入口を `08_Design_Core/README.md` とする。責任本籍・ローカル配置の承認は制作テスト・運用承認を意味しない。Pipeline参照追加、commit・pushは未実施。
+
+------------------------------------------------------------------------
+
 ## 2026-09-07｜Cloud Work Publication Runtimeを実装
 
 Linux Cloud WorkにPowerShellがないため、Human Final Approval後のPublication Bundle生成、Handoff検証、G5およびPublication Stepへ進めなかった。Node.js標準機能だけのcross-platform Runtimeを追加し、Windows PowerShell版と同じSchema、canonicalization、identityおよびGate semanticsを使用するよう接続した。

@@ -84,6 +84,12 @@
       ]
     },
     {
+      "id": "local-design-core",
+      "owner": "local-codex",
+      "mode": "maintain",
+      "path_prefix": "08_Design_Core/"
+    },
+    {
       "id": "local-publication-approval-implementation",
       "owner": "local-codex",
       "mode": "maintain",
